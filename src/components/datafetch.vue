@@ -1,3 +1,22 @@
+<template>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>username</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="user in users" :key="user.id">
+        <td>{{ user.name }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ person.email }}</td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+
 <script>
 export default {
   data() {
@@ -8,7 +27,7 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const response = await fetch('/data.json'); // Fetch the local JSON file
+        const response = await fetch('https://jsonplaceholder.typicode.com/users'); // Fetch the local JSON file
         const data = await response.json();
         this.users = data;
       } catch (error) {
@@ -23,35 +42,3 @@ export default {
 </script>
 
 
-
-
-
-<template>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Age</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="person in people" :key="person.id">
-        <td>{{ person.name }}</td>
-        <td>{{ person.age }}</td>
-      </tr>
-    </tbody>
-  </table>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      people: [
-        { id: 1, name: "John", age: 30 },
-        { id: 2, name: "Jane", age: 25 }
-      ]
-    };
-  }
-};
-</script>
