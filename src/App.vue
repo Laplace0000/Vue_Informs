@@ -1,9 +1,9 @@
 <script>
-import datafetch from './components/datafetch.vue'
+import datafetch from './components/datafetch.vue';
 
 export default {
   components: {
-    datafetch, // Register the component
+    datafetch, // Register the component with this name
   },
 };
 </script>
@@ -11,6 +11,6 @@ export default {
 <template>
   <div id="app">
     <h1>User List</h1>
-    <UserTable /> 
+    <datafetch /> <!-- Use the correct name here -->
   </div>
 </template>
