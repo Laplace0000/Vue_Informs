@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>username</th>
+        <th>Username</th>
         <th>Email</th>
       </tr>
     </thead>
@@ -11,7 +11,7 @@
       <tr v-for="user in users" :key="user.id">
         <td>{{ user.name }}</td>
         <td>{{ user.username }}</td>
-        <td>{{ person.email }}</td>
+        <td>{{ user.email }}</td>
       </tr>
     </tbody>
   </table>
@@ -21,24 +21,22 @@
 export default {
   data() {
     return {
-      users: [] // Initialize an empty array
+      users: [], // Initialize an empty array to hold the fetched data
     };
   },
   methods: {
     async fetchUsers() {
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/users'); // Fetch the local JSON file
-        const data = await response.json();
-        this.users = data;
+        const response = await fetch('https://jsonplaceholder.typicode.com/users'); // API call
+        const data = await response.json(); // Parse JSON response
+        this.users = data; // Assign the fetched data to the users array
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users:', error); // Handle errors
       }
-    }
+    },
   },
   mounted() {
-    this.fetchUsers(); // Call the fetch method
-  }
+    this.fetchUsers(); // Fetch users when the component is mounted
+  },
 };
 </script>
-
-
