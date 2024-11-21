@@ -1,10 +1,10 @@
 <script>
-import MyButton from "@/components/MyButton.vue";
+import Buttonsimple from "../components/Buttonsimple.vue";
 import { useRouter } from "vue-router";
 
 export default {
   components: {
-    MyButton,
+    Buttonsimple,
   },
   setup() {
     const router = useRouter(); // Access Vue Router instance
