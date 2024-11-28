@@ -1,40 +1,53 @@
 <script>
 import { DataTable, Column } from 'primevue';
+import { ref } from 'vue';
+import { FilterMatchMode } from '@primevue/core/api';
+
 export default {
-  data() {
-    return {
-      users: [], // Initialize an empty array to hold the fetched data
+  setup() {
+    const users = ref([]);
+    const filters = ref({
+      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    });
+
+    const fetchUsers = async () => {
+      const response = await fetch('https://jsonplaceholder.typicode.com/users');
+      users.value = await response.json();
     };
-  },
-  methods: {
-    async fetchUsers() {
-      try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/users'); // API call
-        const data = await response.json(); // Parse JSON response
-        this.users = data; // Assign the fetched data to the users array
-      } catch (error) {
-        console.error('Error fetching users:', error); // Handle errors
-      }
-    },
-  },
-  mounted() {
-    this.fetchUsers(); // Fetch users when the component is mounted
+
+    fetchUsers();
+
+    const clearFilter = () => {
+      filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      };
+    };
+
+    return { users, filters, clearFilter };
   },
 };
 </script>
 
-
-
 <template>
   <div class="card">
-    <DataTable :value="users" stripedRows  sortMode="multiple" paginator :rows="5" tableStyle="min-width: 50rem">
-      <Column field="id" header="ID" sortable style="width: 25%"> </Column>
-      <Column field="name" header="Name" sortable style="width: 25%"></Column>
-      <Column field="username" header="Username" sortable style="width: 25%"></Column>
-      <Column field="email" header="Email" sortable style="width: 25%"></Column>
+    <div class="flex justify-between mb-2">
+      <InputText v-model="filters['global'].value" placeholder="Search users..." />
+    </div>
+    <DataTable
+      :value="users"
+      v-model:filters="filters"
+      :globalFilterFields="['name', 'username', 'email']"
+      stripedRows
+      sortMode="multiple"
+      removableSort
+      paginator
+      :rows="5"
+      tableStyle="min-width: 50rem"
+    >
+      <Column field="id" header="ID" sortable></Column>
+      <Column field="name" header="Name" sortable></Column>
+      <Column field="username" header="Username" sortable></Column>
+      <Column field="email" header="Email" sortable></Column>
     </DataTable>
   </div>
 </template>
-
-
-
