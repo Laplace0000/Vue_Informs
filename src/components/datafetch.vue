@@ -1,27 +1,5 @@
-<template>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Username</th>
-        <th>Email</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="user in users" :key="user.id">
-        <td>{{ user.name }}</td>
-        <td>{{ user.username }}</td>
-        <td>{{ user.email }}</td>
-      </tr>
-    </tbody>
-  </table>
-</template>
-
 <script>
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import ColumnGroup from 'primevue/columngroup';   // optional
-import Row from 'primevue/row';                   // optional
+import { DataTable, Column } from 'primevue';
 export default {
   data() {
     return {
@@ -44,3 +22,15 @@ export default {
   },
 };
 </script>
+
+
+
+<template>
+  <div class="card">
+    <DataTable :value="users" tableStyle="min-width: 50rem">
+      <Column field="name" header="Name"></Column>
+      <Column field="username" header="Username"></Column>
+      <Column field="email" header="Email"></Column>
+    </DataTable>
+  </div>
+</template>

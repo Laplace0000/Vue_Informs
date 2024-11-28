@@ -4,16 +4,21 @@ import About from '../views/About.vue';
 
 const routes = [
   {
-    path: '/', // URL path for the home page
-    name: 'Home',
-    component: Home, // Component to render
+    path: '/',
+    redirect: '/Home', // Redirects the root path to /Home
   },
   {
-    path: '/about', // URL path for the about page
+    path: '/Home',
+    name: 'Home',
+    component: () => import('../views/Home.vue'),
+  },
+  {
+    path: '/About',
     name: 'About',
-    component: About,
+    component: () => import('../views/About.vue'),
   },
 ];
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL), // Use history mode

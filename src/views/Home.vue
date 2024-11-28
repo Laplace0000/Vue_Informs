@@ -28,9 +28,8 @@ export default {
     <datafetch /> <!-- Use the correct name here -->
     
   </div>
-    <Redirect to="/about" buttonClass="btn-primary">
-      Go to About
-    </Redirect>
+    <MyButton @click="goToAboutPage">Go to About</MyButton>
+
 </template>
 
 

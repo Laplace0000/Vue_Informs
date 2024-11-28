@@ -18,13 +18,10 @@
 </template>
 
 <script>
-import Button from "primevue/button"
 
 export default {
   name: "App",
 };
-app.component('Button', Button);
-
 </script>
 
 <style>
