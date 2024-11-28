@@ -23,9 +23,9 @@ export default {
 
 
 <template>
-  <div id="app">
-    <h1>User List</h1>
-    <datafetch /> <!-- Use the correct name here -->
+  <div class="card">
+    <h1 style="font-size: 2rem; color: #007bff; text-align: center; margin-bottom: 20px;">  User-Data </h1>
+    <datafetch /> 
     
   </div>
     <MyButton @click="goToAboutPage">Go to About</MyButton>

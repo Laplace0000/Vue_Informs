@@ -27,10 +27,14 @@ export default {
 
 <template>
   <div class="card">
-    <DataTable :value="users" tableStyle="min-width: 50rem">
-      <Column field="name" header="Name"></Column>
-      <Column field="username" header="Username"></Column>
-      <Column field="email" header="Email"></Column>
+    <DataTable :value="users" stripedRows  sortMode="multiple" paginator :rows="5" tableStyle="min-width: 50rem">
+      <Column field="id" header="ID" sortable style="width: 25%"> </Column>
+      <Column field="name" header="Name" sortable style="width: 25%"></Column>
+      <Column field="username" header="Username" sortable style="width: 25%"></Column>
+      <Column field="email" header="Email" sortable style="width: 25%"></Column>
     </DataTable>
   </div>
 </template>
+
+
+
