@@ -4,9 +4,6 @@
 npm run build
 ```
 
-```sh
-html-inline dist/index.html -o standalone.html
-```
 
 ## Project test
 ### test in dev
