@@ -5,7 +5,7 @@ import MakeTable from "../components/makeTable.vue";
 
 export default {
   components: {
-    MakeTable, // Register datafetch
+    MakeTable, // Register table
     Buttonsimple,  // Register MyButton
   },
   setup() {
@@ -25,8 +25,7 @@ export default {
 <template>
   <div class="card">
     <h1 style="font-size: 2rem; color: #007bff; text-align: center; margin-bottom: 20px;">  User-Data </h1>
-    <MakeTable /> 
-    
+    <MakeTable :users="'/data/user.json'" />
   </div>
     <Buttonsimple @click="goToAboutPage">Go to About</Buttonsimple>
 

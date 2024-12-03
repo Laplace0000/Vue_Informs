@@ -1,13 +1,13 @@
 
 <script>
 import { DataTable, Column, FileUpload, Toolbar, Button, InputText } from 'primevue';
-import { ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import DataFetch from './dataFetch.vue';
+import { ref, onMounted } from 'vue'; // Import onMounted and ref
+
 
 export default {
   props: {
-    dataPath: {
+    users: {
       type: String,
       required: true,
     },
@@ -19,18 +19,17 @@ export default {
     Column,
     DataTable,
     FileUpload,
-    DataFetch
   },
   setup(props) {
-    const inputData = ref([]);
+    const users = ref([]);
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
 
     const fetchData = async () => {
       try {
-        const response = await fetch(props.dataPath); // Fetch the data from the prop path
-        inputData.value = await response.json(); // Parse and assign the data
+        const response = await fetch(props.users); // Fetch the data from the prop path
+        users.value = await response.json(); // Parse and assign the data
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -138,7 +137,8 @@ export default {
         }
     };
 
-    return { users, 
+    return {
+      users,
       filters, 
       clearFilter, 
       openNew, 
@@ -172,7 +172,7 @@ export default {
     </Toolbar>
 
     <div class="flex justify-between mb-2">
-      <InputText v-model="filters['global'].value" placeholder="Search users..." />
+      <InputText v-model="filters['global'].value" placeholder="Search Entries..." />
     </div>
     <DataTable
       :value="users"
