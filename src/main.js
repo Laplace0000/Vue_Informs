@@ -5,6 +5,8 @@ import router from './router';
 import PrimeVue from 'primevue/config';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import FileUpload from 'primevue/fileupload';
+import Toolbar from 'primevue/toolbar';
 import ColumnGroup from 'primevue/columngroup';   // optional
 import Row from 'primevue/row';                   // optional
 import InputText from 'primevue/inputtext';
@@ -20,6 +22,8 @@ app.use(PrimeVue, {
 });
 app.component('DataTable', DataTable);
 app.component('Column', Column);
+app.component('FileUpload', FileUpload);
+app.component('Toolbar', Toolbar);
 app.component('ColumnGroup', ColumnGroup)
 app.component('Row', Row)
 app.component('InputText', InputText);
