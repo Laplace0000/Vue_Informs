@@ -7,8 +7,8 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import FileUpload from 'primevue/fileupload';
 import Toolbar from 'primevue/toolbar';
-import ColumnGroup from 'primevue/columngroup';   // optional
-import Row from 'primevue/row';                   // optional
+import ColumnGroup from 'primevue/columngroup';   
+import Row from 'primevue/row';                   
 import InputText from 'primevue/inputtext';
 import Aura from '@primevue/themes/aura';
 
@@ -20,6 +20,8 @@ app.use(PrimeVue, {
         preset: Aura
     }
 });
+
+
 app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('FileUpload', FileUpload);

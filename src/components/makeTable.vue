@@ -131,22 +131,42 @@ export default {
         selectedProducts.value = null;
         toast.add({severity:'success', summary: 'Successful', detail: 'Products Deleted', life: 3000});
     };
+    const handleJsonUpload = (event) => {
+      const file = event.files[0];
 
-    const getStatusLabel = (status) => {
-        switch (status) {
-            case 'INSTOCK':
-                return 'success';
+      if (file) {
+          const reader = new FileReader();
 
-            case 'LOWSTOCK':
-                return 'warn';
+          reader.onload = (e) => {
+              try {
+                  const jsonData = JSON.parse(e.target.result);
+                  console.log("Uploaded JSON Data:", jsonData);
 
-            case 'OUTOFSTOCK':
-                return 'danger';
+                  // Process the JSON data
+                  // Example: Merge with existing data or perform operations
+                  products.value = [...products.value, ...jsonData];
+                  toast.add({
+                      severity: 'success',
+                      summary: 'Successful',
+                      detail: 'JSON data uploaded successfully',
+                      life: 3000,
+                  });
+              } catch (error) {
+                  console.error("Error parsing JSON file:", error);
+                  toast.add({
+                      severity: 'error',
+                      summary: 'Error',
+                      detail: 'Invalid JSON file',
+                      life: 3000,
+                  });
+              }
+          };
 
-            default:
-                return null;
-        }
+          reader.readAsText(file);
+      }
     };
+
+
 
     return {
       users,
@@ -161,8 +181,8 @@ export default {
       confirmDeleteProduct,
       deleteProduct,
       confirmDeleteSelected,
+      handleJsonUpload,
       deleteSelectedProducts,
-      getStatusLabel
      };
   },
 };
@@ -178,7 +198,7 @@ export default {
       </template>
 
       <template #end>
-          <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" customUpload chooseLabel="Import" class="mr-2" auto :chooseButtonProps="{ severity: 'secondary' }" />
+          <FileUpload mode="basic" accept="application/json" :maxFileSize="1000000" label="Import" customUpload chooseLabel="Import" class="mr-2" auto :chooseButtonProps="{ severity: 'secondary' }" />
           <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV($event)" />
       </template>
     </Toolbar>
@@ -190,6 +210,7 @@ export default {
       :value="users"
       :filters="filters"
       :globalFilterFields="columns.map(col => col.field)"
+      :selection="selectedProduct"
       stripedRows
       sortMode="multiple"
       removableSort
@@ -197,6 +218,7 @@ export default {
       :rows="5"
       tableStyle="min-width: 50rem"
     >
+    <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
     <Column
       v-for="(column, index) in columns"
       :key="index"
