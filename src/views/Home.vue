@@ -1,12 +1,12 @@
 <script>
-import datafetch from '../components/datafetch.vue';
-import MyButton from '../components/Buttonsimple.vue';
 import { useRouter } from "vue-router";
+import Buttonsimple from '../components/Buttonsimple.vue';
+import MakeTable from "../components/makeTable.vue";
 
 export default {
   components: {
-    datafetch, // Register datafetch
-    MyButton,  // Register MyButton
+    MakeTable, // Register datafetch
+    Buttonsimple,  // Register MyButton
   },
   setup() {
     const router = useRouter(); // Access Vue Router instance
@@ -25,10 +25,10 @@ export default {
 <template>
   <div class="card">
     <h1 style="font-size: 2rem; color: #007bff; text-align: center; margin-bottom: 20px;">  User-Data </h1>
-    <datafetch /> 
+    <MakeTable /> 
     
   </div>
-    <MyButton @click="goToAboutPage">Go to About</MyButton>
+    <Buttonsimple @click="goToAboutPage">Go to About</Buttonsimple>
 
 </template>
 
