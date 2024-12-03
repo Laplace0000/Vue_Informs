@@ -22,6 +22,7 @@ export default {
   },
   setup(props) {
     const users = ref([]);
+    const columns = ref([]);
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
@@ -29,11 +30,21 @@ export default {
     const fetchData = async () => {
       try {
         const response = await fetch(props.users); // Fetch the data from the prop path
-        users.value = await response.json(); // Parse and assign the data
+        const data = await response.json(); // Parse and assign the data
+        users.value = data; // Assign the fetched data to the users ref
+        
+        if (data.length > 0) {
+          columns.value = Object.keys(data[0]).map((key) => ({
+            field: key,
+            header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize key for header
+            sortable: true,
+          }));
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
+
 
     onMounted(() => {
       fetchData(); // Trigger the data fetch when the component is mounted
@@ -139,6 +150,7 @@ export default {
 
     return {
       users,
+      columns,
       filters, 
       clearFilter, 
       openNew, 
@@ -177,7 +189,7 @@ export default {
     <DataTable
       :value="users"
       :filters="filters"
-      :globalFilterFields="['id', 'name', 'username', 'email']"
+      :globalFilterFields="columns.map(col => col.field)"
       stripedRows
       sortMode="multiple"
       removableSort
@@ -185,10 +197,15 @@ export default {
       :rows="5"
       tableStyle="min-width: 50rem"
     >
-      <Column field="id" header="ID" sortable></Column>
-      <Column field="name" header="Name" sortable></Column>
-      <Column field="username" header="Username" sortable></Column>
-      <Column field="email" header="Email" sortable></Column>
+    <Column
+      v-for="(column, index) in columns"
+      :key="index"
+      :field="column.field"
+      :header="column.header"
+      :sortable="column.sortable"
+    ></Column>
+
+
     </DataTable>
     <Column :exportable="false" style="min-width: 12rem">
       <template #body="slotProps">
