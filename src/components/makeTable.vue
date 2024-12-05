@@ -21,8 +21,11 @@ export default {
     FileUpload,
   },
   setup(props) {
+    const deleteDialog = ref(false);
     const users = ref([]);
+    const Products = ref([]);
     const columns = ref([]);
+    const dt = ref();
     const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
@@ -74,11 +77,10 @@ export default {
                 toast.add({severity:'success', summary: 'Successful', detail: 'Product Updated', life: 3000});
             }
             else {
-                product.value.id = createId();
-                product.value.code = createId();
-                product.value.image = 'product-placeholder.svg';
-                product.value.inventoryStatus = product.value.inventoryStatus ? product.value.inventoryStatus.value : 'INSTOCK';
-                products.value.push(product.value);
+                users.value.id = createId();
+                users.value.code = createId();
+                users.value.image = 'product-placeholder.svg';
+                users.value.push(product.value);
                 toast.add({severity:'success', summary: 'Successful', detail: 'Product Created', life: 3000});
             }
 
@@ -87,23 +89,23 @@ export default {
         }
     };
     const editProduct = (prod) => {
-        product.value = {...prod};
+        users.value = {...prod};
         productDialog.value = true;
     };
     const confirmDeleteProduct = (prod) => {
         product.value = prod;
-        deleteProductDialog.value = true;
+        deleteDialog.value = true;
     };
     const deleteProduct = () => {
-        products.value = products.value.filter(val => val.id !== product.value.id);
-        deleteProductDialog.value = false;
+        users.value = users.value.filter(val => val.id !== product.value.id);
+        deleteDialog.value = false;
         product.value = {};
         toast.add({severity:'success', summary: 'Successful', detail: 'Product Deleted', life: 3000});
     };
     const findIndexById = (id) => {
         let index = -1;
-        for (let i = 0; i < products.value.length; i++) {
-            if (products.value[i].id === id) {
+        for (let i = 0; i < users.value.length; i++) {
+            if (users.value[i].id === id) {
                 index = i;
                 break;
             }
@@ -123,13 +125,21 @@ export default {
         dt.value.exportCSV();
     };
     const confirmDeleteSelected = () => {
-        deleteProductsDialog.value = true;
+        deleteDialog.value = true;
     };
-    const deleteSelectedProducts = () => {
-        products.value = products.value.filter(val => !selectedProducts.value.includes(val));
-        deleteProductsDialog.value = false;
+    
+    const deleteSelected = () => {
+        users.value = products.value.filter(
+          val => !selectedProducts.value.includes(val)
+        );
+        deleteDialog.value = false;
         selectedProducts.value = null;
-        toast.add({severity:'success', summary: 'Successful', detail: 'Products Deleted', life: 3000});
+        toast.add({
+          severity:'success', 
+          summary: 'Successful',
+          detail: 'Products Deleted', 
+          life: 3000
+        });
     };
     const handleJsonUpload = (event) => {
       const file = event.files[0];
@@ -182,7 +192,8 @@ export default {
       deleteProduct,
       confirmDeleteSelected,
       handleJsonUpload,
-      deleteSelectedProducts,
+      deleteSelected,
+      dt
      };
   },
 };
@@ -207,6 +218,7 @@ export default {
       <InputText v-model="filters['global'].value" placeholder="Search Entries..." />
     </div>
     <DataTable
+      ref="dt"
       :value="users"
       :filters="filters"
       :globalFilterFields="columns.map(col => col.field)"
@@ -228,15 +240,22 @@ export default {
     ></Column>
 
 
-    </DataTable>
+    </DataTable>        
     <Column :exportable="false" style="min-width: 12rem">
       <template #body="slotProps">
           <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
           <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
       </template>
     </Column>
-
-
-
   </div>
+  <Dialog v-model:visible="deleteDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+    <div class="flex items-center gap-4">
+      <i class="pi pi-exclamation-triangle !text-3xl" />
+      <span v-if="product">Are you sure you want to delete the selected products?</span>
+    </div>
+    <template #footer>
+      <Button label="No" icon="pi pi-times" text @click="deleteDialog = false" />
+      <Button label="Yes" icon="pi pi-check" text @click="deleteSelected" />
+    </template>
+  </Dialog>
 </template>
