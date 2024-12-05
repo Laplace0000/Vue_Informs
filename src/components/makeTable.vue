@@ -1,202 +1,169 @@
-
-<script>
+<script setup>
 import { DataTable, Column, FileUpload, Toolbar, Button, InputText } from 'primevue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { ref, onMounted } from 'vue'; // Import onMounted and ref
 
+const { userData } = defineProps(['userData'])
 
-export default {
-  props: {
-    users: {
-      type: String,
-      required: true,
-    },
-  },
-  components: {
-    Toolbar,
-    Button,
-    InputText,
-    Column,
-    DataTable,
-    FileUpload,
-  },
-  setup(props) {
-    const deleteDialog = ref(false);
-    const users = ref([]);
-    const Products = ref([]);
-    const columns = ref([]);
-    const dt = ref();
-    const filters = ref({
-      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    });
+const deleteDialog = ref(false);
+const users = ref([]);
+const products = ref([]);
+const columns = ref([]);
+const dt = ref();
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
-    const fetchData = async () => {
-      try {
-        const response = await fetch(props.users); // Fetch the data from the prop path
-        const data = await response.json(); // Parse and assign the data
-        users.value = data; // Assign the fetched data to the users ref
-        
-        if (data.length > 0) {
-          columns.value = Object.keys(data[0]).map((key) => ({
-            field: key,
-            header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize key for header
-            sortable: true,
-          }));
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(userData); // Fetch the data from the prop path
+      const data = await response.json(); // Parse and assign the data
+      users.value = data; // Assign the fetched data to the users ref
+      
+      
+      if (data.length > 0) {
+        columns.value = Object.keys(data[0]).map((key) => ({
+          field: key,
+          header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize key for header
+          sortable: true,
+        }));
       }
-    };
-
-
-    onMounted(() => {
-      fetchData(); // Trigger the data fetch when the component is mounted
-    });
-
-    const clearFilter = () => {
-      filters.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      };
-    };
-    const openNew = () => {
-        product.value = {};
-        submitted.value = false;
-        productDialog.value = true;
-    };
-    const hideDialog = () => {
-        productDialog.value = false;
-        submitted.value = false;
-    };
-    const saveProduct = () => {
-        submitted.value = true;
-
-        if (product?.value.name?.trim()) {
-            if (product.value.id) {
-                product.value.inventoryStatus = product.value.inventoryStatus.value ? product.value.inventoryStatus.value : product.value.inventoryStatus;
-                products.value[findIndexById(product.value.id)] = product.value;
-                toast.add({severity:'success', summary: 'Successful', detail: 'Product Updated', life: 3000});
-            }
-            else {
-                users.value.id = createId();
-                users.value.code = createId();
-                users.value.image = 'product-placeholder.svg';
-                users.value.push(product.value);
-                toast.add({severity:'success', summary: 'Successful', detail: 'Product Created', life: 3000});
-            }
-
-            productDialog.value = false;
-            product.value = {};
-        }
-    };
-    const editProduct = (prod) => {
-        users.value = {...prod};
-        productDialog.value = true;
-    };
-    const confirmDeleteProduct = (prod) => {
-        product.value = prod;
-        deleteDialog.value = true;
-    };
-    const deleteProduct = () => {
-        users.value = users.value.filter(val => val.id !== product.value.id);
-        deleteDialog.value = false;
-        product.value = {};
-        toast.add({severity:'success', summary: 'Successful', detail: 'Product Deleted', life: 3000});
-    };
-    const findIndexById = (id) => {
-        let index = -1;
-        for (let i = 0; i < users.value.length; i++) {
-            if (users.value[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    };
-    const createId = () => {
-        let id = '';
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for ( var i = 0; i < 5; i++ ) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-    const exportCSV = () => {
-        dt.value.exportCSV();
+  };
+
+
+  onMounted(() => {
+    fetchData(userData); // Trigger the data fetch when the component is mounted
+  });
+
+  const clearFilter = () => {
+    filters.value = {
+      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     };
-    const confirmDeleteSelected = () => {
-        deleteDialog.value = true;
-    };
-    
-    const deleteSelected = () => {
-        users.value = products.value.filter(
-          val => !selectedProducts.value.includes(val)
-        );
-        deleteDialog.value = false;
-        selectedProducts.value = null;
-        toast.add({
-          severity:'success', 
-          summary: 'Successful',
-          detail: 'Products Deleted', 
-          life: 3000
-        });
-    };
-    const handleJsonUpload = (event) => {
-      const file = event.files[0];
+  };
+  const openNew = () => {
+      product.value = {};
+      submitted.value = false;
+      productDialog.value = true;
+  };
+  const hideDialog = () => {
+      productDialog.value = false;
+      submitted.value = false;
+  };
+  const saveProduct = () => {
+      submitted.value = true;
 
-      if (file) {
-          const reader = new FileReader();
+      if (product?.value.name?.trim()) {
+          if (product.value.id) {
+              product.value.inventoryStatus = product.value.inventoryStatus.value ? product.value.inventoryStatus.value : product.value.inventoryStatus;
+              products.value[findIndexById(product.value.id)] = product.value;
+              toast.add({severity:'success', summary: 'Successful', detail: 'Product Updated', life: 3000});
+          }
+          else {
+              users.value.id = createId();
+              users.value.code = createId();
+              users.value.image = 'product-placeholder.svg';
+              users.value.push(product.value);
+              toast.add({severity:'success', summary: 'Successful', detail: 'Product Created', life: 3000});
+          }
 
-          reader.onload = (e) => {
-              try {
-                  const jsonData = JSON.parse(e.target.result);
-                  console.log("Uploaded JSON Data:", jsonData);
-
-                  // Process the JSON data
-                  // Example: Merge with existing data or perform operations
-                  products.value = [...products.value, ...jsonData];
-                  toast.add({
-                      severity: 'success',
-                      summary: 'Successful',
-                      detail: 'JSON data uploaded successfully',
-                      life: 3000,
-                  });
-              } catch (error) {
-                  console.error("Error parsing JSON file:", error);
-                  toast.add({
-                      severity: 'error',
-                      summary: 'Error',
-                      detail: 'Invalid JSON file',
-                      life: 3000,
-                  });
-              }
-          };
-
-          reader.readAsText(file);
+          productDialog.value = false;
+          product.value = {};
       }
-    };
+  };
+  const editProduct = (prod) => {
+      users.value = {...prod};
+      productDialog.value = true;
+  };
+  const confirmDeleteProduct = (prod) => {
+      product.value = prod;
+      deleteDialog.value = true;
+  };
+  const deleteProduct = () => {
+      users.value = users.value.filter(val => val.id !== product.value.id);
+      deleteDialog.value = false;
+      product.value = {};
+      toast.add({severity:'success', summary: 'Successful', detail: 'Product Deleted', life: 3000});
+  };
+  const findIndexById = (id) => {
+      let index = -1;
+      for (let i = 0; i < users.value.length; i++) {
+          if (users.value[i].id === id) {
+              index = i;
+              break;
+          }
+      }
+
+      return index;
+  };
+  const createId = () => {
+      let id = '';
+      var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      for ( var i = 0; i < 5; i++ ) {
+          id += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return id;
+  }
+  const exportCSV = () => {
+      dt.value.exportCSV();
+  };
+  const confirmDeleteSelected = () => {
+      deleteDialog.value = true;
+  };
+  
+  const deleteSelected = () => {
+      users.value = products.value.filter(
+        val => !selectedProducts.value.includes(val)
+      );
+      deleteDialog.value = false;
+      selectedProducts.value = null;
+      toast.add({
+        severity:'success', 
+        summary: 'Successful',
+        detail: 'Products Deleted', 
+        life: 3000
+      });
+  };
+  const handleJsonUpload = (event) => {
+    const file = event.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            try {
+                const jsonData = JSON.parse(e.target.result);
+                console.log("Uploaded JSON Data:", jsonData);
+
+                // Process the JSON data
+                // Example: Merge with existing data or perform operations
+                products.value = [...products.value, ...jsonData];
+                toast.add({
+                    severity: 'success',
+                    summary: 'Successful',
+                    detail: 'JSON data uploaded successfully',
+                    life: 3000,
+                });
+            } catch (error) {
+                console.error("Error parsing JSON file:", error);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Invalid JSON file',
+                    life: 3000,
+                });
+            }
+        };
+
+        reader.readAsText(file);
+    }
+  };
 
 
 
-    return {
-      users,
-      columns,
-      filters, 
-      clearFilter, 
-      openNew, 
-      hideDialog, 
-      saveProduct, 
-      editProduct, 
-      exportCSV,
-      confirmDeleteProduct,
-      deleteProduct,
-      confirmDeleteSelected,
-      handleJsonUpload,
-      deleteSelected,
-      dt
-     };
-  },
-};
 </script>
 
 <template>
