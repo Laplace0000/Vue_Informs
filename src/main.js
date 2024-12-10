@@ -22,13 +22,31 @@ app.use(PrimeVue, {
         preset: Aura
     }
 });
-(async () => {
-    // Call the dataFetch function to get data
-    const fetchedUserData = await dataHandler.fetch0('./data/user.json'); // Use relative path to your data file
 
-    // Pass the data as a global property or directly to the root component
-    app.provide('userData', fetchedUserData); // Using Vue's provide/inject for global access
+
+//Fetcing json data for all components and views 
+(async () => {
+    //define datasource
+    const dataSources = [
+        dataHandler.fetch0('./data/user.json'),
+    ];
+
+    const results = await Promise.allSettled(dataSources);
+
+    // Process results
+    const fetchedData = results.map((result, index) => {
+        if (result.status === 'fulfilled') {
+            return result.value;
+        } else {
+            console.error(`Failed to fetch data source ${index}:`, result.reason);
+            return null; 
+        }
+    });
+
+    //Provide the fetched data as global properties
+    app.provide('userData', fetchedData[0]);
 })();
+
 
 // Register the ToastService correctly
 app.use(ToastService);
