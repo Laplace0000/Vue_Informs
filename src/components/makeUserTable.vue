@@ -2,6 +2,7 @@
 import { DataTable, Column, FileUpload, Toolbar, Button, InputText } from 'primevue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { ref } from 'vue'; 
+import { onMounted } from 'vue';
 import * as tableFun from '../Methods/tableFun';
 
 const { userData } = defineProps(['userData'])
@@ -16,7 +17,8 @@ const filters = ref({
 });
 </script>
 
-<template>
+<template>          <Button label="Export" icon="pi pi-upload" severity="secondary" @click="tableFun.exportCSV(dt.value)" />
+
   <div class="card">
 
     <Toolbar class="mb-6">
@@ -27,7 +29,7 @@ const filters = ref({
 
       <template #end>
           <FileUpload mode="basic" accept="application/json" :maxFileSize="1000000" label="Import" customUpload chooseLabel="Import" class="mr-2" auto :chooseButtonProps="{ severity: 'secondary' }" />
-          <Button label="Export" icon="pi pi-upload" severity="secondary" @click="dt.value.exportCSV()" />
+          <Button label="Export" icon="pi pi-upload" severity="secondary" @click="tableFun.exportCSV(dt)" />
       </template>
     </Toolbar>
 

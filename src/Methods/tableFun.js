@@ -1,5 +1,3 @@
-import { DataTable } from 'primevue';
-
 export function openNew() {
     product.value = {};
     submitted.value = false;
@@ -70,7 +68,7 @@ export function createId() {
 }
 
 export function exportCSV(dt) {
-    dt.value.exportCSV();
+    dt.exportCSV();
 }
 
 export function confirmDeleteSelected() {
