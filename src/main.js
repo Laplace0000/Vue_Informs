@@ -1,6 +1,6 @@
 import './assets/main.css';
 import { createApp } from 'vue';
-import * as dataFetch from './dataFetch';
+import * as dataHandler from './dataHandler';
 import App from './App.vue';
 import router from './router';
 import PrimeVue from 'primevue/config';
@@ -24,7 +24,7 @@ app.use(PrimeVue, {
 });
 (async () => {
     // Call the dataFetch function to get data
-    const fetchedUserData = await dataFetch.fetch0('./data/user.json'); // Use relative path to your data file
+    const fetchedUserData = await dataHandler.fetch0('./data/user.json'); // Use relative path to your data file
 
     // Pass the data as a global property or directly to the root component
     app.provide('userData', fetchedUserData); // Using Vue's provide/inject for global access
