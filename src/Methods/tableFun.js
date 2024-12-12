@@ -1,33 +1,13 @@
+
 export function openNew() {
     product.value = {};
     submitted.value = false;
     productDialog.value = true;
 }
 
-export function hideDialog() {
-    productDialog.value = false;
-    submitted.value = false;
-}
 
 
-export function deleteObjects0(allData, objects) {
-    if (!Array.isArray(allData.value) || !Array.isArray(objects.value)) {
-        throw new Error("Both allData.value and objects.value must be arrays.");
-    }
-    updatedData.value = allData.value.filter(val => !objects.value.includes(val));
-    console.log('deleting objects', objects);
-    objects.value = null;
-    return updatedData.value;
-}
-function deleteObjects1() {
-    if (!Array.isArray(objects.value) || !Array.isArray(selectedObjects.value)) {
-          throw new Error("Both allData.value and objects.value must be arrays.");
-      }
-      objects.value = objects.value.filter(val => !selectedObjects.value.includes(val));
-      selectedObjects.value = null;
-  }
-
-const deleteObjects2 = () => {
+export async function deleteObjects0(objects, selectedObjects) {
     if (!selectedObjects.value || !selectedObjects.value.length) {
         toast.add({ severity: 'warn', summary: 'Warning', detail: 'No objects selected', life: 3000 });
         return;
@@ -37,14 +17,16 @@ const deleteObjects2 = () => {
     objects.value = objects.value.filter(
         obj => !selectedObjects.value.some(selected => selected.id === obj.id)
     );
+    
+    await nextTick();
+    console.log('new state:', objects.value)
 
     // Clear the selection
     selectedObjects.value = [];
 
-    // Show success message
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Selected Objects Deleted', life: 3000 });
-};
+    return objects.value
 
+};
 
 export function exportCSV(dt) {
     dt.exportCSV();

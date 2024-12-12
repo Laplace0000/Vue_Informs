@@ -3,11 +3,12 @@ import { DataTable, Column, FileUpload, Toolbar, Button, InputText } from 'prime
 import { FilterMatchMode } from '@primevue/core/api';
 import { ref, inject } from 'vue'; 
 import * as tableFun from '../Methods/tableFun';
+import { nextTick } from 'vue';
 import { useToast } from 'primevue/usetoast';
 
 // Inject reactive user data
 const injectedData = inject('userData');
-const objects = injectedData.userData
+const objects = ref(injectedData?.userData || []);
 
 console.log(injectedData)
 console.log(objects)
@@ -31,7 +32,7 @@ const columns = ref([
 
 
 
-const deleteObjects = () => {
+async function deleteObjects() {
     if (!selectedObjects.value || !selectedObjects.value.length) {
         toast.add({ severity: 'warn', summary: 'Warning', detail: 'No objects selected', life: 3000 });
         return;
@@ -41,6 +42,9 @@ const deleteObjects = () => {
     objects.value = objects.value.filter(
         obj => !selectedObjects.value.some(selected => selected.id === obj.id)
     );
+    
+    await nextTick();
+    console.log('new state:', objects.value)
 
     // Clear the selection
     selectedObjects.value = [];
@@ -64,7 +68,6 @@ function handleFileUpload(event) {
   };
   reader.readAsText(file);
 }
-
 </script>
 
 <template>         
@@ -124,12 +127,6 @@ function handleFileUpload(event) {
         <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
       </DataTable>
        
-      <Column :exportable="false" style="min-width: 12rem">
-        <template #body="slotProps">
-            <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
-            <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
-        </template>
-      </Column>
     </div>
   </div>
 
