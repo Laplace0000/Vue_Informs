@@ -28,7 +28,7 @@ export default {
 <template>
   <div class="card">
     <h1 style="font-size: 2rem; color: #007bff; text-align: center; margin-bottom: 20px;">  User-Data - local source</h1>
-    <makeUserTable  :userData="fetchedUserData"/>
+    <makeUserTable/>
   </div>
     <Buttonsimple @click="goToAboutPage">Go to About</Buttonsimple>
 

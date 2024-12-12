@@ -1,5 +1,6 @@
 import './assets/main.css';
 import { createApp } from 'vue';
+import { reactive } from 'vue';
 import * as dataHandler from './dataHandler';
 import App from './App.vue';
 import router from './router';
@@ -26,14 +27,12 @@ app.use(PrimeVue, {
 
 //Fetcing json data for all components and views 
 (async () => {
-    //define datasource
     const dataSources = [
         dataHandler.fetch0('./data/user.json'),
     ];
 
     const results = await Promise.allSettled(dataSources);
 
-    // Process results
     const fetchedData = results.map((result, index) => {
         if (result.status === 'fulfilled') {
             return result.value;
@@ -43,8 +42,11 @@ app.use(PrimeVue, {
         }
     });
 
-    //Provide the fetched data as global properties
-    app.provide('userData', fetchedData[0]);
+    const reactiveData = reactive({
+        userData: fetchedData[0] || []
+    });
+
+    app.provide('userData', reactiveData);
 })();
 
 
