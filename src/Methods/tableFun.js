@@ -1,10 +1,10 @@
+import { nextTick } from 'vue';
 
 export function openNew() {
     product.value = {};
     submitted.value = false;
     productDialog.value = true;
 }
-
 
 
 export async function deleteObjects0(objects, selectedObjects) {
@@ -17,19 +17,19 @@ export async function deleteObjects0(objects, selectedObjects) {
     objects.value = objects.value.filter(
         obj => !selectedObjects.value.some(selected => selected.id === obj.id)
     );
-    
+
     await nextTick();
-    console.log('new state:', objects.value)
+    console.log('new state:', objects.value);
 
     // Clear the selection
     selectedObjects.value = [];
 
-    return objects.value
 
-};
+    return objects.value;
+}
 
-export function exportCSV(dt) {
-    dt.exportCSV();
+export function exportCSV(objects) {
+    objects.exportCSV();
 }
 
 export function handleJsonUpload(event) {

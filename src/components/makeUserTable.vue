@@ -3,21 +3,21 @@ import { DataTable, Column, FileUpload, Toolbar, Button, InputText } from 'prime
 import { FilterMatchMode } from '@primevue/core/api';
 import { ref, inject } from 'vue'; 
 import * as tableFun from '../Methods/tableFun';
-import { nextTick } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import button from '../components/Buttonsimple.vue'
 
 // Inject reactive user data
 const injectedData = inject('userData');
-const objects = ref(injectedData?.userData || []);
+const objects = ref(injectedData.userData);
 
 console.log(injectedData)
 console.log(objects)
 
 
 //variables
-const dt = ref();
+const objectDialog = ref(false);
 const selectedObjects = ref([]);
-const toast = useToast();
+const dataTable = ref([]);
+const object = ref({});
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -29,45 +29,19 @@ const columns = ref([
 ]);
 
 
+//får deletefunctionn til at fungere.. er der en måde at komme omkring dette så man bare kan kalde den??
+async function handleDelete() {
+    objects.value = await tableFun.deleteObjects0(objects, selectedObjects);
+}
 
 
 
-async function deleteObjects() {
-    if (!selectedObjects.value || !selectedObjects.value.length) {
-        toast.add({ severity: 'warn', summary: 'Warning', detail: 'No objects selected', life: 3000 });
-        return;
-    }
-
-    // Filter out the selected objects from the userData
-    objects.value = objects.value.filter(
-        obj => !selectedObjects.value.some(selected => selected.id === obj.id)
-    );
-    
-    await nextTick();
-    console.log('new state:', objects.value)
-
-    // Clear the selection
-    selectedObjects.value = [];
-
-    // Show success message
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Selected Objects Deleted', life: 3000 });
+const openNew = () => {
+    object.value = {};
+    submitted.value = false;
+    objectDialog.value = true;
 };
 
-
-
-function handleFileUpload(event) {
-  const file = event.files[0];
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-      objects.value = Array.isArray(data) ? data : [];
-    } catch (error) {
-      console.error("Invalid JSON format:", error.message);
-    }
-  };
-  reader.readAsText(file);
-}
 </script>
 
 <template>         
@@ -85,25 +59,27 @@ function handleFileUpload(event) {
               label="Delete" 
               icon="pi pi-trash" 
               severity="danger" 
-              outlined @click="deleteObjects" 
+              outlined @click="handleDelete" 
               :disabled="!selectedObjects || !selectedObjects.length" />
         </template>
 
         <template #end>
             <FileUpload 
-            mode="basic" 
-            accept="application/json" 
-            :maxFileSize="1000000" 
-            label="Import" 
-            customUpload 
-            chooseLabel="Import" 
-            class="mr-2" 
-            auto :chooseButtonProps="{ severity: 'secondary' }" />
+              mode="basic" 
+              accept="application/json" 
+              :maxFileSize="1000000" 
+              name="file" 
+              url="http://localhost:5173/Home"
+            >
+              <template #chooseButton>
+                <MyButton @click="$refs.fileInput.click()" buttonClass="btn-primary">Choose File</MyButton>
+              </template>
+            </FileUpload>
             <Button 
             label="Export" 
             icon="pi pi-upload" 
             severity="secondary" 
-            @click="tableFun.exportCSV(dt)" />
+            @click="tableFun.exportCSV(dataTable)" />
         </template>
       </Toolbar>
 
@@ -111,6 +87,7 @@ function handleFileUpload(event) {
         <InputText v-model="filters['global'].value" placeholder="Search Entries..." />
       </div>
       <DataTable
+        ref="dataTable"
         :value="objects"
         :filters="filters"
         :globalFilterFields="columns.map(col => col.field)"
@@ -126,7 +103,10 @@ function handleFileUpload(event) {
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
         <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
       </DataTable>
-       
+
+
+
+
     </div>
   </div>
 

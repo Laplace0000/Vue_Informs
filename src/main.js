@@ -28,7 +28,7 @@ app.use(PrimeVue, {
 //Fetcing json data for all components and views 
 (async () => {
     const dataSources = [
-        dataHandler.fetch0('./data/user.json'),
+        dataHandler.fetch0('./data/usercut.json'),
     ];
 
     const results = await Promise.allSettled(dataSources);
