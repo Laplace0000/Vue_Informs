@@ -1,5 +1,6 @@
 import { nextTick } from 'vue';
 
+
 export function openNew() {
     product.value = {};
     submitted.value = false;
@@ -7,9 +8,12 @@ export function openNew() {
 }
 
 
-export async function deleteObjects0(objects, selectedObjects) {
-    //logging deletion(potential backup)
-    console.log('deleting', selectedObjects)
+export function createID(objects){
+    return objects.value.length + 1;
+}
+
+export async function deleteObjects0(objects, selectedObjects) { 
+    console.log('deleting', selectedObjects.value)
     if (!selectedObjects.value || !selectedObjects.value.length) {
         toast.add({ severity: 'warn', summary: 'Warning', detail: 'No objects selected', life: 3000 });
         return;
@@ -22,6 +26,7 @@ export async function deleteObjects0(objects, selectedObjects) {
 
     await nextTick();
     console.log('new state:', objects.value);
+
 
     // Clear the selection
     selectedObjects.value = [];
@@ -65,4 +70,79 @@ export function handleJsonUpload(event) {
         };
         reader.readAsText(file);
     }
+}
+
+
+
+// Table-related functions
+export function addRow(context, token, endpoint, postData) {
+  if (context.validateFields(context.newRow, 'add')) {
+    const newRowData = { ...context.newRow };
+    delete newRowData.id;
+
+    postData(token, endpoint, newRowData)
+      .then(responseId => {
+        newRowData.id = responseId || context.generateUUID();
+        context.tableData.push(newRowData);
+        context.resetNewRow();
+        context.showAddOverlay = false;
+      })
+      .catch(error => console.error('Error adding row:', error));
+  }
+}
+
+export function startAdd(context) {
+  context.resetNewRow();
+  context.errors.add = '';
+  context.showAddOverlay = true;
+}
+
+export function resetNewRow(context) {
+  context.newRow = { id: '', field1: '', field2: '', field3: '' };
+}
+
+export function startEdit(context, rowIndex) {
+  context.editingRowIndex = rowIndex;
+  context.editingRow = { ...context.tableData[rowIndex] };
+  context.errors.edit = '';
+  context.showEditOverlay = true;
+}
+
+export function updateRow(context, token, endpoint, putData) {
+  if (context.validateFields(context.editingRow, 'edit')) {
+    if (context.editingRowIndex !== null) {
+      Vue.set(
+        context.tableData,
+        context.editingRowIndex,
+        { ...context.editingRow }
+      );
+
+      const json = context.tableData[context.editingRowIndex];
+      putData(token, `${endpoint}`, json.id, JSON.stringify(json));
+    }
+    context.cancelEdit();
+  }
+}
+
+export function cancelEdit(context) {
+  context.editingRowIndex = null;
+  context.editingRow = { id: '', field1: '', field2: '', field3: '' };
+  context.showEditOverlay = false;
+}
+
+export function confirmDelete(context, rowIndex) {
+  context.deletingRowIndex = rowIndex;
+  context.showDeleteConfirmation = true;
+}
+
+export function deleteRow(context, token, endpoint, deleteData) {
+  const json = context.tableData[context.deletingRowIndex];
+  deleteData(token, `${endpoint}`, json.id);
+  context.tableData.splice(context.deletingRowIndex, 1);
+  context.cancelDelete();
+}
+
+export function cancelDelete(context) {
+  context.deletingRowIndex = null;
+  context.showDeleteConfirmation = false;
 }

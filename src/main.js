@@ -15,6 +15,8 @@ import InputText from 'primevue/inputtext';
 import Aura from '@primevue/themes/aura';
 import ToastService from 'primevue/toastservice';
 import Toast from 'primevue/toast'; // Import the Toast component
+import DialogService from 'primevue/dialogservice'
+
 
 const app = createApp(App);
 app.use(router);
@@ -52,6 +54,7 @@ app.use(PrimeVue, {
 
 // Register the ToastService correctly
 app.use(ToastService);
+app.use(DialogService);
 
 // Register components
 app.component('DataTable', DataTable);

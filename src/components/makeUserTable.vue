@@ -3,6 +3,9 @@ import { DataTable, Column, FileUpload, Toolbar, Button, InputText } from 'prime
 import { FilterMatchMode } from '@primevue/core/api';
 import { ref, inject } from 'vue'; 
 import * as tableFun from '../Methods/tableFun';
+import Buttonsimple from './Buttonsimple.vue';
+import Dialog from 'primevue/dialog';
+
 
 // Inject reactive user data
 const injectedData = inject('userData');
@@ -15,6 +18,7 @@ console.log(objects)
 //variables
 const objectDialog = ref(false);
 const selectedObjects = ref([]);
+const submitted = ref([]);
 const dataTable = ref([]);
 const object = ref({});
 const filters = ref({
@@ -24,22 +28,56 @@ const filters = ref({
 const columns = ref([
   { field: 'id', header: 'ID' },
   { field: 'name', header: 'Name' },
-  { field: 'email', header: 'Email' },
 ]);
 
 
 //får deletefunctionn til at fungere.. er der en måde at komme omkring dette så man bare kan kalde den??
-async function handleDelete() {
-    objects.value = await tableFun.deleteObjects0(objects, selectedObjects);
+function handleDelete() {
+    if (!selectedObjects.value || !selectedObjects.value.length) return;
+    objects.value = objects.value.filter(obj => !selectedObjects.value.includes(obj));
+    selectedObjects.value = []; // Clear selection
+}
+
+function onFileUpload(event) {
+    const file = event.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+        const data = JSON.parse(reader.result);
+        objects.value = data; // Update table data with uploaded file content
+    };
+    reader.readAsText(file);
 }
 
 
-
-const openNew = () => {
+function openNew(){
     object.value = {};
     submitted.value = false;
     objectDialog.value = true;
 };
+
+function hideDialog (){
+    objectDialog.value = false;
+    submitted.value = false;
+};
+
+function createID() {
+    return objects.value.length
+        ? Math.max(...objects.value.map(obj => obj.id)) + 1
+        : 1;
+}
+
+
+function saveObject() {
+    submitted.value = true;
+
+    if (!object.value.name) return; 
+    object.value.id = createID(); 
+    objects.value.push({ ...object.value }); 
+    objectDialog.value = false;  
+    object.value = {};  
+}
+
+
 
 </script>
 
@@ -68,10 +106,10 @@ const openNew = () => {
               accept="application/json" 
               :maxFileSize="1000000" 
               name="file" 
-              url="http://localhost:5173/Home"
+              @uploader = "onFileUpload"
             >
               <template #chooseButton>
-                <MyButton @click="$refs.fileInput.click()" buttonClass="btn-primary">Choose File</MyButton>
+                <buttonsimple @click="$refs.fileInput.click()" buttonClass="btn-primary">Choose File</buttonsimple>
               </template>
             </FileUpload>
             <Button 
@@ -102,10 +140,35 @@ const openNew = () => {
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
         <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
       </DataTable>
+      <Dialog
+        v-model:visible="objectDialog"
+        :style="{ width: '450px' }"
+        header="Add User"
+        :modal="true"
+      >
+        <div class="flex flex-col gap-6">
+          <div>
+            <label for="name" class="block font-bold mb-3">Name</label>
+            <InputText
+              id="name"
+              v-model.trim="object.name"
+              required="true"
+              autofocus
+              :invalid="submitted && !object.name"
+              fluid
+            />
+            <small v-if="submitted && !object.name" class="text-red-500"
+              >Name is required.</small
+            >
+          </div>
 
+        </div>
 
-
-
+        <template #footer>
+          <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+          <Button label="Save" icon="pi pi-check" @click="saveObject" />
+        </template>
+      </Dialog>
     </div>
   </div>
 
