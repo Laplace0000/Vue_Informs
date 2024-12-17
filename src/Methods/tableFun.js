@@ -8,6 +8,8 @@ export function openNew() {
 
 
 export async function deleteObjects0(objects, selectedObjects) {
+    //logging deletion(potential backup)
+    console.log('deleting', selectedObjects)
     if (!selectedObjects.value || !selectedObjects.value.length) {
         toast.add({ severity: 'warn', summary: 'Warning', detail: 'No objects selected', life: 3000 });
         return;

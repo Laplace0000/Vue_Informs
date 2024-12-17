@@ -3,7 +3,6 @@ import { DataTable, Column, FileUpload, Toolbar, Button, InputText } from 'prime
 import { FilterMatchMode } from '@primevue/core/api';
 import { ref, inject } from 'vue'; 
 import * as tableFun from '../Methods/tableFun';
-import button from '../components/Buttonsimple.vue'
 
 // Inject reactive user data
 const injectedData = inject('userData');
