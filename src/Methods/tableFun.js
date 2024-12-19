@@ -1,10 +1,11 @@
 import { nextTick } from 'vue';
 
 
-export function openNew() {
-    product.value = {};
-    submitted.value = false;
-    productDialog.value = true;
+export function openNew(object, objectDialog, submitted) {
+    object = {};
+    objectDialog = true;
+    submitted = false;
+    return {object: object, objectDialog: objectDialog, submitted: submitted};
 }
 
 
@@ -17,11 +18,42 @@ export function hideDialog (objectDialog, submitted){
 };
 
 
-export function createID(objects) {
+export function createID0(objects) {
   return objects.value.length
       ? Math.max(...objects.value.map(obj => obj.id)) + 1
       : 1;
 }
+
+
+//med tilfældige id'er seje hashmaps og sådan så vi undgår dubletter     bygger nyt hashmap hver gang hvilket jo kan blive en smule træslt i længden
+export function createID1(objects) {
+  // Extract existing IDs from objects
+  const idList = objects.value.map(obj => obj.id);
+
+  // make hashmap 
+  const hashmap = {};
+  for (const num of idList) {
+    hashmap[num] = true;
+  }
+
+  // generate a new random 8 cifre ID
+  function generateID() {
+    let id = '';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 8; i++) {
+      id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+  }
+
+  let id = generateID();
+  while (hashmap[id] === true) {
+    id = generateID(); // Generate a new ID if duplicate is found
+  }
+
+  return id;
+}
+
 
 export async function deleteObjects0(objects, selectedObjects) { 
     console.log('deleting', selectedObjects.value)

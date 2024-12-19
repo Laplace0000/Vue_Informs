@@ -48,18 +48,11 @@ function onFileUpload(event) {
 }
 
 
-function openNew(){
-    object.value = {};
-    submitted.value = false;
-    objectDialog.value = true;
-};
-
-
 function saveObject() {
     submitted.value = true;
 
     if (!object.value.name) return; 
-    object.value.id = tableFun.createID(objects); 
+    object.value.id = tableFun.createID1(objects); 
     objects.value.push({ ...object.value }); 
     objectDialog.value = false;  
     console.log(objects.value)
@@ -80,7 +73,13 @@ function saveObject() {
               label="New" 
               icon="pi pi-plus" 
               class="mr-2" 
-              @click="openNew" />
+              @click="() => { 
+              const {object: objectValue, objectDialog: dialogValue, submitted: submittedValue } = tableFun.openNew(object, objectDialog, submitted); 
+              objectDialog = dialogValue; 
+              submitted = submittedValue; 
+              object = objectValue;
+              }"   
+            />
             <Button 
               label="Delete" 
               icon="pi pi-trash" 
