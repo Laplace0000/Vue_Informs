@@ -1,6 +1,3 @@
-import { nextTick } from 'vue';
-import { inject } from 'vue';
-
 
 export function openNew(object, objectDialog, submitted) {
     object = {};
@@ -56,9 +53,8 @@ export function createID1(objects) {
 }
 
 //ny version af createID1 der bruger et existerende hashmap
-export function createID2() {
+export function createID2(hashmap) {
   // Access global hashmap (see main.js)
-  const hashmap = inject('dataIDs');
 
   // Generate random 8-character ID
   function generateID() {
@@ -71,7 +67,11 @@ export function createID2() {
   }
 
   let id = generateID();
+  const MAX_ATTEMPTS = 1000000;
   while (hashmap[id] === true) {
+    if (attempts++ > MAX_ATTEMPTS) {
+      throw new Error("Unable to generate unique ID");
+    }
     id = generateID(); // Generate a new ID if duplicate is found
   }
 
@@ -82,28 +82,34 @@ export function createID2() {
 }
 
 
-export async function deleteObjects0(objects, selectedObjects) { 
-    console.log('deleting', selectedObjects.value)
-    if (!selectedObjects.value || !selectedObjects.value.length) {
-        toast.add({ severity: 'warn', summary: 'Warning', detail: 'No objects selected', life: 3000 });
-        return;
-    }
+export function deleteObjects0(objects, selectedObjects) { 
+    console.log('deleting', selectedObjects)
 
     // Filter out the selected objects from the userData
-    objects.value = objects.value.filter(
-        obj => !selectedObjects.value.some(selected => selected.id === obj.id)
-    );
-
-    await nextTick();
-    console.log('new state:', objects.value);
+    objects = objects.filter(obj => !selectedObjects.includes(obj));
+    selectedObjects = []; // Clear selection
+    console.log('new state:', objects);
 
 
     // Clear the selection
-    selectedObjects.value = [];
+    selectedObjects = [];
 
 
-    return objects.value;
+    return {objects: objects, selectedObjects: selectedObjects};
 }
+
+export function saveObject(objectDialog, submitted, object, objects, hashmap) {
+  submitted = true;
+
+  if (!object.name) return; 
+  object.id = createID2(hashmap); 
+  objects.push({ ...object }); 
+  objectDialog = false;  
+  console.log(objects)
+  object = {};  
+  return {objectDialog: objectDialog, submitted: submitted, object: object, objects: objects};
+}
+
 
 export function exportCSV(objects) {
     objects.exportCSV();

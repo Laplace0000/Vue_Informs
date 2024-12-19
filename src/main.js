@@ -48,7 +48,7 @@ app.use(PrimeVue, {
         userData: fetchedData[0] || []
     });
 
-    const hashmap = {};
+    const globalIDsHash = {};
     const idList = [];
 
     // Populate idList and hashmap
@@ -56,12 +56,12 @@ app.use(PrimeVue, {
         if (data && Array.isArray(data)) {
             const ids = data.map(obj => obj.id); // Extract ids
             idList.push(...ids);
-            ids.forEach(id => { hashmap[id] = true; }); // Add to hashmap
+            ids.forEach(id => { globalIDsHash[id] = true; }); // Add to hashmap
         }
     });
 
     app.provide('userData', reactiveData);
-    app.provide('dataIDs', hashmap);
+    app.provide('globalIDsHash', globalIDsHash);
 
 })();
 

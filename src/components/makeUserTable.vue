@@ -9,6 +9,7 @@ import Dialog from 'primevue/dialog';
 
 // Inject reactive user data
 const injectedData = inject('userData');
+const globalIDsHash = inject('globalIDsHash');
 const objects = ref(injectedData.userData);
 
 console.log(injectedData)
@@ -36,31 +37,6 @@ function handleDelete() {
     objects.value = objects.value.filter(obj => !selectedObjects.value.includes(obj));
     selectedObjects.value = []; // Clear selection
 }
-
-function onFileUpload(event) {
-    const file = event.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-        const data = JSON.parse(reader.result);
-        objects.value = data; // Update table data with uploaded file content
-    };
-    reader.readAsText(file);
-}
-
-
-function saveObject() {
-    submitted.value = true;
-
-    if (!object.value.name) return; 
-    object.value.id = tableFun.createID1(objects); 
-    objects.value.push({ ...object.value }); 
-    objectDialog.value = false;  
-    console.log(objects.value)
-    object.value = {};  
-}
-
-
-
 </script>
 
 <template>         
@@ -84,7 +60,11 @@ function saveObject() {
               label="Delete" 
               icon="pi pi-trash" 
               severity="danger" 
-              outlined @click="handleDelete" 
+              outlined @click="() => { 
+              const {objects: objectsValue, selectedObjects: selectedObjectsValue} = tableFun.deleteObjects0(objects, selectedObjects); 
+              objects = objectsValue;
+              selectedObjects = selectedObjectsValue;
+              }"   
               :disabled="!selectedObjects || !selectedObjects.length" />
         </template>
 
@@ -94,7 +74,7 @@ function saveObject() {
               accept="application/json" 
               :maxFileSize="1000000" 
               name="file" 
-              @uploader = "onFileUpload"
+              url = ""
             >
               <template #chooseButton>
                 <buttonsimple @click="$refs.fileInput.click()" buttonClass="btn-primary">Choose File</buttonsimple>
@@ -163,7 +143,15 @@ function saveObject() {
               submitted = submittedValue; 
             }" 
           />          
-          <Button label="Save" icon="pi pi-check" @click="saveObject" />
+          <Button label="Save" icon="pi pi-check" 
+            @click="() => { 
+              const { objectDialog: dialogValue, submitted: submittedValue, object: objectValue, objects: objectsValue } = tableFun.saveObject(objectDialog, submitted, object, objects, globalIDsHash); 
+              objectDialog = dialogValue; 
+              submitted = submittedValue; 
+              object = objectValue;
+              objects = objectsValue;
+            }"  
+          />
         </template>
       </Dialog>
     </div>
