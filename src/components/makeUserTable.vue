@@ -14,7 +14,6 @@ const objects = ref(injectedData.userData);
 console.log(injectedData)
 console.log(objects)
 
-
 //variables
 const objectDialog = ref(false);
 const selectedObjects = ref([]);
@@ -55,25 +54,15 @@ function openNew(){
     objectDialog.value = true;
 };
 
-function hideDialog (){
-    objectDialog.value = false;
-    submitted.value = false;
-};
-
-function createID() {
-    return objects.value.length
-        ? Math.max(...objects.value.map(obj => obj.id)) + 1
-        : 1;
-}
-
 
 function saveObject() {
     submitted.value = true;
 
     if (!object.value.name) return; 
-    object.value.id = createID(); 
+    object.value.id = tableFun.createID(objects); 
     objects.value.push({ ...object.value }); 
     objectDialog.value = false;  
+    console.log(objects.value)
     object.value = {};  
 }
 
@@ -165,7 +154,16 @@ function saveObject() {
         </div>
 
         <template #footer>
-          <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+          <Button 
+            label="Cancel" 
+            icon="pi pi-times" 
+            text 
+            @click="() => { 
+              const { objectDialog: dialogValue, submitted: submittedValue } = tableFun.hideDialog(objectDialog, submitted); 
+              objectDialog = dialogValue; 
+              submitted = submittedValue; 
+            }" 
+          />          
           <Button label="Save" icon="pi pi-check" @click="saveObject" />
         </template>
       </Dialog>
@@ -173,6 +171,6 @@ function saveObject() {
   </div>
 
 
-
+  
 
 </template>

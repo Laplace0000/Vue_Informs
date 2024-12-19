@@ -8,8 +8,19 @@ export function openNew() {
 }
 
 
-export function createID(objects){
-    return objects.value.length + 1;
+export function hideDialog (objectDialog, submitted){
+
+  objectDialog = false;
+  submitted = false;
+
+  return {objectDialog: objectDialog, submitted: submitted};
+};
+
+
+export function createID(objects) {
+  return objects.value.length
+      ? Math.max(...objects.value.map(obj => obj.id)) + 1
+      : 1;
 }
 
 export async function deleteObjects0(objects, selectedObjects) { 
