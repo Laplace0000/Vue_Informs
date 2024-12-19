@@ -1,4 +1,5 @@
 import { nextTick } from 'vue';
+import { inject } from 'vue';
 
 
 export function openNew(object, objectDialog, submitted) {
@@ -50,6 +51,32 @@ export function createID1(objects) {
   while (hashmap[id] === true) {
     id = generateID(); // Generate a new ID if duplicate is found
   }
+
+  return id;
+}
+
+//ny version af createID1 der bruger et existerende hashmap
+export function createID2() {
+  // Access global hashmap (see main.js)
+  const hashmap = inject('dataIDs');
+
+  // Generate random 8-character ID
+  function generateID() {
+    let id = '';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 8; i++) {
+      id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+  }
+
+  let id = generateID();
+  while (hashmap[id] === true) {
+    id = generateID(); // Generate a new ID if duplicate is found
+  }
+
+  // add the new ID to the hashmap
+  hashmap[id] = true;
 
   return id;
 }
