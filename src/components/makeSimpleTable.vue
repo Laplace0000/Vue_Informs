@@ -26,46 +26,12 @@ const columns = ref([
   { field: 'name', header: 'Name' },
   { field: 'email', header: 'Email' },
 ]);
-
-
-//får deletefunctionn til at fungere.. er der en måde at komme omkring dette så man bare kan kalde den??
-async function handleDelete() {
-    objects.value = await tableFun.deleteObjects0(objects, selectedObjects);
-}
-
-
-
-const openNew = () => {
-    object.value = {};
-    submitted.value = false;
-    objectDialog.value = true;
-};
-
 </script>
 
 <template>         
 
   <div>
     <div class="card">
-      <Toolbar class="mb-6">
-        <template #start>
-            <Button 
-              label="New" 
-              icon="pi pi-plus" 
-              class="mr-2" 
-              @click="openNew" />
-            <Button 
-              label="Delete" 
-              icon="pi pi-trash" 
-              severity="danger" 
-              outlined @click="handleDelete" 
-              :disabled="!selectedObjects || !selectedObjects.length" />
-        </template>
-      </Toolbar>
-
-      <div class="flex justify-between mb-2">
-        <InputText v-model="filters['global'].value" placeholder="Search Entries..." />
-      </div>
       <DataTable
         ref="dataTable"
         :value="objects"
@@ -83,14 +49,6 @@ const openNew = () => {
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
         <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
       </DataTable>
-
-
-
-
     </div>
   </div>
-
-
-
-
 </template>
